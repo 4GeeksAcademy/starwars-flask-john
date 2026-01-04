@@ -27,6 +27,8 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "user_name": self.user_name,
+            "is_active": self.is_active,
             # do not serialize the password, its a security breach
         }
 
@@ -44,6 +46,15 @@ class Characters(db.Model):
 
     def __repr__(self):
         return f'<Character {self.first_name} {self.last_name}>'
+    
+    def serialize(self):
+        return{
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "specie": self.specie,
+            "height": self.height,
+        }
 
 
 class FavoriteCharacters(db.Model):
@@ -56,7 +67,7 @@ class FavoriteCharacters(db.Model):
         back_populates='favorite_by')
 
     def __repr__(self):
-        return f'<FavoriteCharacter UserID: {self.user_id} CharacterID: {self.character_id}>'
+        return f'{self.user} le gusta {self.character}'
 
 
 class Vehicle(db.Model):
@@ -70,6 +81,9 @@ class Vehicle(db.Model):
     favorite_by: Mapped[list['FavoriteVehicles']
                         ] = relationship(back_populates='vehicle')
 
+    def __repr__(self):
+        return f'<Vehicle {self.name}>'
+
 
 class FavoriteVehicles(db.Model):
     __tablename__ = 'favorite_vehicles'
@@ -78,6 +92,9 @@ class FavoriteVehicles(db.Model):
     user: Mapped['User'] = relationship(back_populates='favoriteveh')
     vehicle_id: Mapped[int] = mapped_column(ForeignKey('vehicle.id'))
     vehicle: Mapped['Vehicle'] = relationship(back_populates='favorite_by')
+
+    def __repr__(self):
+        return f'{self.user} le gusta {self.vehicle}>'
 
 
 class Planets(db.Model):
@@ -89,6 +106,9 @@ class Planets(db.Model):
     favorite_by: Mapped[list['FavoritePlanets']
                         ] = relationship(back_populates='planet')
 
+    def __repr__(self):
+        return f'<Planet {self.name}>'
+
 
 class FavoritePlanets(db.Model):
     __tablename__ = 'favorite_planets'
@@ -97,3 +117,6 @@ class FavoritePlanets(db.Model):
     user: Mapped['User'] = relationship(back_populates='favoritepla')
     planet_id: Mapped[int] = mapped_column(ForeignKey('planets.id'))
     planet: Mapped['Planets'] = relationship(back_populates='favorite_by')
+
+    def __repr__(self):
+        return f'{self.user} le gusta {self.planet}>'

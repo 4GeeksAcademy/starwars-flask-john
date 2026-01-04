@@ -17,7 +17,7 @@ class FavoriteCharacterModelView(ModelView):
 
 class VehicleModelView(ModelView):
     column_auto_select_related = True
-    column_list = ('id', 'max_speed', 'driver', 'favorite_by')
+    column_list = ('id', 'name', 'max_speed', 'driver', 'favorite_by')
 
 class FavoriteVehicleModelView(ModelView):
     column_auto_select_related = True
