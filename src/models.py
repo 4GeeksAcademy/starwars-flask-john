@@ -16,7 +16,7 @@ class User(db.Model):
     favoritecha: Mapped[list['FavoriteCharacters']
                         ] = relationship(back_populates='user')
     favoriteveh: Mapped[list['FavoriteVehicles']
-                        ] = relationship(back_populates='user')
+                        ] = relationship(back_populates='user', cascade="all, delete-orphan")
     favoritepla: Mapped[list['FavoritePlanets']
                         ] = relationship(back_populates='user')
 
@@ -37,11 +37,11 @@ class Characters(db.Model):
     __tablename__ = 'character'
     id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(String(20), nullable=False)
-    last_name: Mapped[str] = mapped_column(String(20), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(20), nullable=True)
     specie: Mapped[str] = mapped_column(String(20), nullable=False)
     height: Mapped[int] = mapped_column(Integer)
     favorite_by: Mapped[list['FavoriteCharacters']
-                        ] = relationship(back_populates='character')
+                        ] = relationship(back_populates='character', cascade="all, delete-orphan")
     vehicle: Mapped[list['Vehicle']] = relationship(back_populates='driver')
 
     def __repr__(self):
@@ -79,7 +79,14 @@ class Vehicle(db.Model):
         ForeignKey('character.id'), nullable=True, unique=True)
     driver: Mapped['Characters'] = relationship(back_populates='vehicle')
     favorite_by: Mapped[list['FavoriteVehicles']
-                        ] = relationship(back_populates='vehicle')
+                        ] = relationship(back_populates='vehicle', cascade="all, delete-orphan")
+    
+    def serialize(self):
+        return{
+            "name": self.name,
+            "max_speed": self.max_speed,
+            "driver_id": self.driver_id,
+        }
 
     def __repr__(self):
         return f'<Vehicle {self.name}>'
@@ -104,7 +111,14 @@ class Planets(db.Model):
     population: Mapped[int] = mapped_column(Integer)
     climate: Mapped[str] = mapped_column(String(250), nullable=True)
     favorite_by: Mapped[list['FavoritePlanets']
-                        ] = relationship(back_populates='planet')
+                        ] = relationship(back_populates='planet', cascade="all, delete-orphan")
+    def serialize(self):
+        return{
+            "id": self.id,
+            "name": self.name,
+            "population": self.population,
+            "climate": self.climate,
+        }
 
     def __repr__(self):
         return f'<Planet {self.name}>'
@@ -117,6 +131,7 @@ class FavoritePlanets(db.Model):
     user: Mapped['User'] = relationship(back_populates='favoritepla')
     planet_id: Mapped[int] = mapped_column(ForeignKey('planets.id'))
     planet: Mapped['Planets'] = relationship(back_populates='favorite_by')
+
 
     def __repr__(self):
         return f'{self.user} le gusta {self.planet}>'
