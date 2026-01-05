@@ -93,7 +93,7 @@ def delete_user(user_id):
     db.session.commit()
     return jsonify({"msg":"User eliminado"}), 200
 
-@app.route('/characters', methods=['GET'])
+@app.route('/people', methods=['GET'])
 def get_characters():
     characters = Characters.query.all()
     characters_serialized=[]
@@ -101,14 +101,14 @@ def get_characters():
         characters_serialized.append(character.serialize())
     return jsonify({'data': characters_serialized})
 
-@app.route('/characters/<int:character_id>', methods=['GET'])
+@app.route('/people/<int:character_id>', methods=['GET'])
 def get_character_id(character_id):
     character= Characters.query.get(character_id)
     if character is None:
         return jsonify({"msg":"Personaje no existe"}), 404
     return jsonify(character.serialize()), 200
 
-@app.route('/character', methods=['POST'])
+@app.route('/people', methods=['POST'])
 def add_character():
     body=request.get_json(silent=True)
     if body is None:
@@ -126,7 +126,7 @@ def add_character():
     db.session.commit()
     return jsonify(new_character.serialize()), 201
 
-@app.route('/characters/<int:character_id>', methods=['PUT'])
+@app.route('/people/<int:character_id>', methods=['PUT'])
 def update_character(character_id):
     character= Characters.query.get(character_id)
     if character is None:
@@ -145,7 +145,7 @@ def update_character(character_id):
     db.session.commit()
     return jsonify(character.serialize()), 200
 
-@app.route('/characters/<int:character_id>', methods=['DELETE'])
+@app.route('/people/<int:character_id>', methods=['DELETE'])
 def delete_character(character_id):
     character= Characters.query.get(character_id)
     if character is None:
@@ -282,7 +282,7 @@ def get_user_favorites(user_id):
         "favorite_vehicles": favorite_vehicles,
         "favorite_planets": favorite_planets}), 200
 
-@app.route('/user/<int:user_id>/favorites/characters', methods=['POST'])
+@app.route('/user/<int:user_id>/favorites/people', methods=['POST'])
 def add_user_favorite_characters(user_id):
     user = User.query.get(user_id)
     if user is None:
@@ -339,7 +339,7 @@ def add_user_favorite_planets(user_id):
         db.session.commit()
         return jsonify({"msg":f"Planeta {planet.name} agregado a favoritos"}), 201
     
-@app.route('/user/<int:user_id>/favorites/characters/<int:favorite_id>', methods=['DELETE'])
+@app.route('/user/<int:user_id>/favorites/people/<int:favorite_id>', methods=['DELETE'])
 def delete_user_favorite_character(user_id, favorite_id):
     user = User.query.get(user_id)
     if user is None:
